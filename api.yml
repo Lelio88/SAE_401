@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Bike Store API
+  description: API for managing stores, products, categories, brands, stocks, and employees in a bike store system.
+  version: 1.0.0
+servers:
+  - url: https://dev-buton231.users.info.unicaen.fr/MMI2/SAE_401/api.php
+    description: Production server
+paths:
+  /:
+    get:
+      summary: Retrieve resources
+      description: Retrieve various resources based on the `action` parameter.
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [stores, store, products, product, categories, category, brands, brand, stocks, stock, employees, employee, get_stock, getStoreName, getEmployeesByStore]
+          description: The action to perform.
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: The ID of the resource (e.g., store, product, category, brand, employee).
+        - name: product_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: The ID of the product (used for stock-related actions).
+        - name: store_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: The ID of the store (used for stock-related actions).
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Bad request
+    post:
+      summary: Add a new resource
+      description: Add a new store, product, category, brand, stock, or employee.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [addStore, addProduct, addCategory, addBrand, addStock, addEmployee]
+                store_name:
+                  type: string
+                  description: Name of the store (required for addStore).
+                product_name:
+                  type: string
+                  description: Name of the product (required for addProduct).
+                category_name:
+                  type: string
+                  description: Name of the category (required for addCategory).
+                brand_name:
+                  type: string
+                  description: Name of the brand (required for addBrand).
+                quantity:
+                  type: integer
+                  description: Quantity of stock (required for addStock).
+                employee_name:
+                  type: string
+                  description: Name of the employee (required for addEmployee).
+                employee_email:
+                  type: string
+                  description: Email of the employee (required for addEmployee).
+                employee_password:
+                  type: string
+                  description: Password of the employee (required for addEmployee).
+                employee_role:
+                  type: string
+                  description: Role of the employee (required for addEmployee).
+      responses:
+        '201':
+          description: Resource created successfully
+        '400':
+          description: Bad request
+    put:
+      summary: Update an existing resource
+      description: Update an existing store, product, category, brand, stock, or employee.
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [updateStore, updateProduct, updateCategory, updateBrand, updateStock, updateEmployee]
+          description: The action to perform.
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: The ID of the resource to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Resource updated successfully
+        '404':
+          description: Resource not found
+    delete:
+      summary: Delete a resource
+      description: Delete a store, product, category, brand, stock, or employee.
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [deleteStore, deleteProduct, deleteCategory, deleteBrand, deleteStock, deleteEmployee]
+          description: The action to perform.
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: The ID of the resource to delete.
+      responses:
+        '200':
+          description: Resource deleted successfully
+        '404':
+          description: Resource not found
+components:
+  schemas:
+    Store:
+      type: object
+      properties:
+        store_id:
+          type: integer
+        store_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip_code:
+          type: string
+    Product:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        product_name:
+          type: string
+        brand:
+          $ref: '#/components/schemas/Brand'
+        category:
+          $ref: '#/components/schemas/Category'
+        model_year:
+          type: integer
+        list_price:
+          type: number
+    Category:
+      type: object
+      properties:
+        category_id:
+          type: integer
+        category_name:
+          type: string
+    Brand:
+      type: object
+      properties:
+        brand_id:
+          type: integer
+        brand_name:
+          type: string
+    Stock:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        store:
+          $ref: '#/components/schemas/Store'
+        quantity:
+          type: integer
+    Employee:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+        employee_email:
+          type: string
+        employee_role:
+          type: string
+        store:
+          $ref: '#/components/schemas/Store'

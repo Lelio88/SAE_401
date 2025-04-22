@@ -1,0 +1,5 @@
+Allow From All
+Satisfy Any
+Options FollowSymLinks
+RewriteEngine On
+
